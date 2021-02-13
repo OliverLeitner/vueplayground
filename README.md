@@ -1,4 +1,4 @@
-# demo
+# just a demo app based upon vue default demo app with me trying out some stuff
 
 just some playing around with vue...
 
