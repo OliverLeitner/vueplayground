@@ -9,8 +9,8 @@
       <input 
         type="search" 
         v-model="searchItem" 
+        v-on:keyup="rowMatch"
         placeholder="enter search term"
-        v-on:keyup="rowMatch" 
         name="search"/>
       <!-- search input field reset button -->
       <input type="reset" name="reset" v-on:click="searchItem = ''" value="reset"/>
@@ -37,8 +37,8 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from 'vue-class-component';
-// import { defineComponent, PropType } from 'vue';
+import { Options, Vue } from 'vue-class-component'
+// import { Component, defineComponent, PropType, Prop } from 'vue';
 
 // iweather interface
 export interface IWeather {
@@ -96,13 +96,24 @@ export class Weather extends Data implements IWeather {
   props: {
     msg: String, // receive data from calling app
     url: String
-  }
+  },
+  watch: {
+    searchItem: value => {
+      console.log(value)
+    }
+  },
+  /*methods: {
+    rowMatchOuter() {
+      const tm = new TestMachine;
+      tm.rowMatch()
+    }
+  }*/
 })
 export default class TestMachine extends Vue {
-  msg!: string // handling the component provided data
-  url!: string // data url
-  localWeatherDataList: Weather[] = [] // the weather data json binding
-  searchItem: string = "" // bound input element
+  protected msg!: string // handling the component provided data
+  protected url!: string // data url
+  protected localWeatherDataList: Weather[] = [] // the weather data json binding
+  protected searchItem: string = "" // bound input element
 
   // filter the table data based on input field
   protected rowMatch() {
