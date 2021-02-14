@@ -3,7 +3,8 @@
     <h1>TEsting environment</h1>
     <TestMachine 
       msg="Welcome to Your Vue.js + Testing area" 
-      url="weather.json"/>
+      url="weather.json"
+      title="my special test app node master"/>
   </div>
 </template>
 

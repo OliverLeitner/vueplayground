@@ -95,7 +95,8 @@ export class Weather extends Data implements IWeather {
 @Options({
   props: {
     msg: String, // receive data from calling app
-    url: String
+    url: String, // json data url
+    title: String // for the page title, given from above
   },
   watch: {
     searchItem: value => {
@@ -112,6 +113,7 @@ export class Weather extends Data implements IWeather {
 export default class TestMachine extends Vue {
   protected msg!: string // handling the component provided data
   protected url!: string // data url
+  protected title!: string // page title
   protected localWeatherDataList: Weather[] = [] // the weather data json binding
   protected searchItem: string = "" // bound input element
 
@@ -145,6 +147,18 @@ export default class TestMachine extends Vue {
       this.weatherDataList = <Weather[]>data as IWeather[];
     } else this.weatherDataList = <Weather[]>require(`@/assets/${this.url}`) as IWeather[]
     // this.weatherDataList.flatMap((elem: Weather) => {console.log(<Weather>elem as IWeather)})
+  }
+
+  // metadata stuff sceleton
+  protected set setMeta(title: string) {
+    document.title = title
+  }
+
+  // adding metadata when needed
+  // TODO: add one of the already existing vue seo component
+  // https://project-awesome.org/vuejs/awesome-vue
+  async beforeMount() {
+    this.setMeta = this.title
   }
 
   // sets stuff at loading of component
