@@ -149,6 +149,11 @@ export default class TestMachine extends Vue {
     // this.weatherDataList.flatMap((elem: Weather) => {console.log(<Weather>elem as IWeather)})
   }
 
+  // dont really need it, but to avoid devtools error
+  protected get setMeta(): string {
+    return document.title
+  }
+
   // metadata stuff sceleton
   protected set setMeta(title: string) {
     document.title = title
