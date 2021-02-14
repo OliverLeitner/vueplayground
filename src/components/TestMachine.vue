@@ -24,7 +24,10 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="data in weatherDataList" :key="data.id" v-show="searchItem === '' || data.hasData">
+        <tr 
+          v-for="data in weatherDataList" 
+          :key="data.id" 
+          v-show="searchItem === '' || data.location.toLowerCase().includes(searchItem.toLowerCase())">
           <td>{{data.location}}</td>
           <td>{{data.time}}</td>
           <td>{{data.temp}}</td>
@@ -45,14 +48,14 @@ export interface IWeather {
   temp: number,
   abbr: string,
   id: number,
-  hasData: boolean
+  // hasData: boolean
 }
 
 // mother of all data class
 export class Data {
   constructor(
     public id: number = 0,
-    public hasData: boolean = true
+    // public hasData: boolean = true
   ) {
     return this
   }
@@ -96,7 +99,8 @@ export class Weather extends Data implements IWeather {
     url: String, // json data url
     title: String // for the page title, given from above
   },
-  watch: {
+  // we can use watch to console log or debug, but we dont need it either...
+  /*watch: {
     searchItem: 'getRows' // calls a method
   },
   methods: { // we are local to the default class here
@@ -104,7 +108,7 @@ export class Weather extends Data implements IWeather {
       console.log(this.searchItem)
       this.rowMatch() // this seems to be enough, no event needed except the default watchers
     }
-  }
+  }*/
 })
 export default class TestMachine extends Vue {
   protected msg!: string // handling the component provided data
@@ -114,7 +118,8 @@ export default class TestMachine extends Vue {
   protected searchItem: string = "" // bound input element
 
   // filter the table data based on input field
-  protected rowMatch() {
+  // we actually dont need to loop here hence were already looping in the template...
+  /*protected rowMatch() {
     for (let idx: number = 0; idx < this.weatherDataList.length; idx++)
       if (
         this.weatherDataList[idx].location.toLowerCase().includes(this.searchItem.toLowerCase())
@@ -122,7 +127,7 @@ export default class TestMachine extends Vue {
           // this.weatherDataList[idx].temp.includes(this.searchItem)
       ) this.weatherDataList[idx].hasData = true;
       else this.weatherDataList[idx].hasData = false;
-  }
+  }*/
 
   // sets weatherdata
   protected set weatherDataList(data: Weather[]) {
