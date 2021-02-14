@@ -9,7 +9,6 @@
       <input 
         type="search" 
         v-model="searchItem" 
-        v-on:keyup="rowMatch"
         placeholder="enter search term"
         name="search"/>
       <!-- search input field reset button -->
@@ -38,7 +37,6 @@
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
-// import { Component, defineComponent, PropType, Prop } from 'vue';
 
 // iweather interface
 export interface IWeather {
@@ -99,16 +97,14 @@ export class Weather extends Data implements IWeather {
     title: String // for the page title, given from above
   },
   watch: {
-    searchItem: value => {
-      console.log(value)
-    }
+    searchItem: 'getRows' // calls a method
   },
-  /*methods: {
-    rowMatchOuter() {
-      const tm = new TestMachine;
-      tm.rowMatch()
+  methods: { // we are local to the default class here
+    getRows () {
+      console.log(this.searchItem)
+      this.rowMatch() // this seems to be enough, no event needed except the default watchers
     }
-  }*/
+  }
 })
 export default class TestMachine extends Vue {
   protected msg!: string // handling the component provided data
