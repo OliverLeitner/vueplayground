@@ -25,7 +25,7 @@
       </thead>
       <tbody>
         <tr 
-          v-for="data in weatherDataList" 
+          v-for="data in getStoreStuff" 
           :key="data.id" 
           v-show="searchItem === '' || data.location.toLowerCase().includes(searchItem.toLowerCase())">
           <td>{{data.location}}</td>
@@ -40,6 +40,7 @@
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
+import { useStore } from 'vuex'
 
 // iweather interface
 export interface IWeather {
@@ -101,13 +102,13 @@ export class Weather extends Data implements IWeather {
   },
   // we can use watch to console log or debug, but we dont need it either...
   /*watch: {
-    searchItem: 'getRows' // calls a method
+    searchItem: 'getRows', // calls a method
   },
   methods: { // we are local to the default class here
-    getRows () {
+    /*getRows () {
       console.log(this.searchItem)
       this.rowMatch() // this seems to be enough, no event needed except the default watchers
-    }
+    },
   }*/
 })
 export default class TestMachine extends Vue {
@@ -148,6 +149,19 @@ export default class TestMachine extends Vue {
       this.weatherDataList = <Weather[]>data as IWeather[];
     } else this.weatherDataList = <Weather[]>require(`@/assets/${this.url}`) as IWeather[]
     // this.weatherDataList.flatMap((elem: Weather) => {console.log(<Weather>elem as IWeather)})
+    this.doStoreStuff()
+  }
+
+  // write to store
+  protected doStoreStuff() {
+    const store = useStore()
+    store.commit('fetch', this.weatherDataList)
+  }
+
+  // read from store
+  protected get getStoreStuff() {
+    const store = useStore()
+    return store.state.result
   }
 
   // dont really need it, but to avoid devtools error
