@@ -9,9 +9,6 @@ export default createStore({
       state.result = payload;
     }
   },
-  getters: {
-    results: state => state.result
-  },
   actions: {
   },
   modules: {

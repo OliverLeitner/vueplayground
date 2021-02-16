@@ -25,7 +25,7 @@
       </thead>
       <tbody>
         <tr 
-          v-for="data in getStoreStuff" 
+          v-for="data in readFromStore" 
           :key="data.id" 
           v-show="searchItem === '' || data.location.toLowerCase().includes(searchItem.toLowerCase())">
           <td>{{data.location}}</td>
@@ -149,17 +149,17 @@ export default class TestMachine extends Vue {
       this.weatherDataList = <Weather[]>data as IWeather[];
     } else this.weatherDataList = <Weather[]>require(`@/assets/${this.url}`) as IWeather[]
     // this.weatherDataList.flatMap((elem: Weather) => {console.log(<Weather>elem as IWeather)})
-    this.doStoreStuff()
+    this.writeToStore = this.weatherDataList
   }
 
   // write to store
-  protected doStoreStuff() {
+  protected set writeToStore(data: Weather[]) {
     const store = useStore()
-    store.commit('fetch', this.weatherDataList)
+    store.commit('fetch', data)
   }
 
   // read from store
-  protected get getStoreStuff() {
+  protected get readFromStore(): Weather[] {
     const store = useStore()
     return store.state.result
   }
