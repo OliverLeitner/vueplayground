@@ -37,6 +37,7 @@
 import { Options, Vue } from 'vue-class-component';
 
 @Options({
+  name: 'HelloWorld',
   props: {
     msg: String
   }

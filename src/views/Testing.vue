@@ -13,6 +13,7 @@ import { Options, Vue } from 'vue-class-component';
 import TestMachine from '@/components/TestMachine.vue'; // @ is an alias to /src
 
 @Options({
+  name: 'TestMachineView',
   components: {
     TestMachine,
   },

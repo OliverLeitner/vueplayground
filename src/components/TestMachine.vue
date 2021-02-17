@@ -95,6 +95,7 @@ export class Weather extends Data implements IWeather {
 });*/
 
 @Options({
+  name: 'TestMachine',
   props: {
     msg: String, // receive data from calling app
     url: String, // json data url
