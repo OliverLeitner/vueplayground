@@ -6,7 +6,7 @@ export default createStore({
   },
   mutations: {
     fetch(state, payload) {
-      state.result = payload;
+      state.result = payload
     }
   },
   actions: {

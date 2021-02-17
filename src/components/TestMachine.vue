@@ -25,7 +25,7 @@
       </thead>
       <tbody>
         <tr 
-          v-for="data in readFromStore" 
+          v-for="data in storeHandler" 
           :key="data.id" 
           v-show="searchItem === '' || data.location.toLowerCase().includes(searchItem.toLowerCase())">
           <td>{{data.location}}</td>
@@ -40,7 +40,7 @@
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
-import { useStore } from 'vuex'
+import { Store, useStore } from 'vuex'
 
 // iweather interface
 export interface IWeather {
@@ -95,7 +95,7 @@ export class Weather extends Data implements IWeather {
 });*/
 
 @Options({
-  name: 'TestMachine',
+  name: 'TestMachine', // to get named components in vue browser extension
   props: {
     msg: String, // receive data from calling app
     url: String, // json data url
@@ -116,8 +116,9 @@ export default class TestMachine extends Vue {
   protected msg!: string // handling the component provided data
   protected url!: string // data url
   protected title!: string // page title
-  protected localWeatherDataList: Weather[] = [] // the weather data json binding
+  // protected localWeatherDataList: Weather[] = [] // the weather data json binding
   protected searchItem: string = "" // bound input element
+  protected store: Store<any> = useStore() // global store def
 
   // filter the table data based on input field
   // we actually dont need to loop here hence were already looping in the template...
@@ -132,37 +133,36 @@ export default class TestMachine extends Vue {
   }*/
 
   // sets weatherdata
-  protected set weatherDataList(data: Weather[]) {
+  /*protected set weatherDataList(data: Weather[]) {
     this.localWeatherDataList = <Weather[]>data as IWeather[]
-  }
+  }*/
 
   // get weatherdata
-  protected get weatherDataList(): Weather[] {
+  /*protected get weatherDataList(): Weather[] {
       return this.localWeatherDataList as IWeather[];
-  }
+  }*/
 
   // grabs data
   // TODO: playing around with apollo on actual graphql apis
   protected async getJsonData(): Promise<any> {
+    let weatherData: Weather[] = []
     if (this.url.includes('://')) {
       const response = await fetch(`${this.url}`)
       const data = await response.json()
-      this.weatherDataList = <Weather[]>data as IWeather[];
-    } else this.weatherDataList = <Weather[]>require(`@/assets/${this.url}`) as IWeather[]
+      weatherData = <Weather[]>data as IWeather[];
+    } else weatherData = <Weather[]>require(`@/assets/${this.url}`) as IWeather[]
     // this.weatherDataList.flatMap((elem: Weather) => {console.log(<Weather>elem as IWeather)})
-    this.writeToStore = this.weatherDataList
+    if (weatherData) this.storeHandler = <Weather[]>weatherData
   }
 
   // write to store
-  protected set writeToStore(data: Weather[]) {
-    const store = useStore()
-    store.commit('fetch', data)
+  protected set storeHandler(data: Weather[]) {
+    this.store.commit('fetch', <Weather[]>data)
   }
 
   // read from store
-  protected get readFromStore(): Weather[] {
-    const store = useStore()
-    return store.state.result
+  protected get storeHandler(): Weather[] {
+    return this.store.state.result
   }
 
   // dont really need it, but to avoid devtools error
@@ -186,7 +186,7 @@ export default class TestMachine extends Vue {
   async mounted() {
     // TODO: add logic of "createddate"
     // TODO: store data locally
-    if (this.weatherDataList.length === 0)
+    if (!this.storeHandler.length)
       await this.getJsonData()
   }
 }
