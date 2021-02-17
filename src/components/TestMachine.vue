@@ -40,7 +40,7 @@
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
-import { Store, useStore } from 'vuex'
+import { mapGetters, Store, useStore } from 'vuex'
 
 // iweather interface
 export interface IWeather {
@@ -50,6 +50,11 @@ export interface IWeather {
   abbr: string,
   id: number,
   // hasData: boolean
+}
+
+// store state interface
+export interface IState {
+  result: Weather[]
 }
 
 // mother of all data class
@@ -96,11 +101,11 @@ export class Weather extends Data implements IWeather {
 
 @Options({
   name: 'TestMachine', // to get named components in vue browser extension
-  props: {
+  /*props: {
     msg: String, // receive data from calling app
     url: String, // json data url
     title: String // for the page title, given from above
-  },
+  },*/
   // we can use watch to console log or debug, but we dont need it either...
   /*watch: {
     searchItem: 'getRows', // calls a method
@@ -114,11 +119,11 @@ export class Weather extends Data implements IWeather {
 })
 export default class TestMachine extends Vue {
   protected msg!: string // handling the component provided data
-  protected url!: string // data url
-  protected title!: string // page title
+  // protected url!: string  // data url
+  // protected title!: string // page title
   // protected localWeatherDataList: Weather[] = [] // the weather data json binding
   protected searchItem: string = "" // bound input element
-  protected store: Store<any> = useStore() // global store def
+  protected store: Store<IState> = useStore() // global store def
 
   // filter the table data based on input field
   // we actually dont need to loop here hence were already looping in the template...
@@ -146,11 +151,11 @@ export default class TestMachine extends Vue {
   // TODO: playing around with apollo on actual graphql apis
   protected async getJsonData(): Promise<any> {
     let weatherData: Weather[] = []
-    if (this.url.includes('://')) {
-      const response = await fetch(`${this.url}`)
+    if ((<string>this.$attrs.url).includes('://')) {
+      const response = await fetch(`${<string>this.$attrs.url}`)
       const data = await response.json()
       weatherData = <Weather[]>data as IWeather[];
-    } else weatherData = <Weather[]>require(`@/assets/${this.url}`) as IWeather[]
+    } else weatherData = <Weather[]>require(`@/assets/${this.$attrs.url}`) as IWeather[]
     // this.weatherDataList.flatMap((elem: Weather) => {console.log(<Weather>elem as IWeather)})
     if (weatherData) this.storeHandler = <Weather[]>weatherData
   }
@@ -172,14 +177,15 @@ export default class TestMachine extends Vue {
 
   // metadata stuff sceleton
   protected set setMeta(title: string) {
-    document.title = title
+    document.title = <string>this.$attrs.title
   }
 
   // adding metadata when needed
   // TODO: add one of the already existing vue seo component
   // https://project-awesome.org/vuejs/awesome-vue
   async beforeMount() {
-    this.setMeta = this.title
+    this.msg = <string>this.$attrs.msg
+    this.setMeta = <string>this.$attrs.title
   }
 
   // sets stuff at loading of component
