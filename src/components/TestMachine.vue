@@ -1,6 +1,7 @@
 <template>
   <div class="test">
-    <h1>{{ msg }}</h1>
+    <!-- if we dont operate on that passed in var, we dont need to have it in props -->
+    <h1>{{ $attrs.msg }}</h1>
     <p>
       search in table
     </p>
@@ -27,7 +28,8 @@
         <tr 
           v-for="data in storeHandler" 
           :key="data.id" 
-          v-show="searchItem === '' || data.location.toLowerCase().includes(searchItem.toLowerCase())">
+          v-show="searchItem === '' || 
+          data.location.toLowerCase().includes(searchItem.toLowerCase())">
           <td>{{data.location}}</td>
           <td>{{data.time}}</td>
           <td>{{data.temp}}</td>
@@ -40,7 +42,7 @@
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
-import { mapGetters, Store, useStore } from 'vuex'
+import { Store, useStore } from 'vuex'
 
 // iweather interface
 export interface IWeather {
@@ -118,7 +120,7 @@ export class Weather extends Data implements IWeather {
   }*/
 })
 export default class TestMachine extends Vue {
-  protected msg!: string // handling the component provided data
+  // protected msg!: string // handling the component provided data
   // protected url!: string  // data url
   // protected title!: string // page title
   // protected localWeatherDataList: Weather[] = [] // the weather data json binding
@@ -184,7 +186,7 @@ export default class TestMachine extends Vue {
   // TODO: add one of the already existing vue seo component
   // https://project-awesome.org/vuejs/awesome-vue
   async beforeMount() {
-    this.msg = <string>this.$attrs.msg
+    // this.msg = <string>this.$attrs.msg
     this.setMeta = <string>this.$attrs.title
   }
 
