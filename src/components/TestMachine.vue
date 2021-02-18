@@ -69,6 +69,15 @@ export class Data {
   }
 }
 
+// TODO: find out more about the following
+/*type Reflection<T> = {
+    value: T;
+    resolved: true;
+} | {
+    error: unknown;
+    rejected: true;
+}*/
+
 // weather class building on data class implementing iweather interface
 export class Weather extends Data implements IWeather {
   constructor(
@@ -151,7 +160,7 @@ export default class TestMachine extends Vue {
 
   // grabs data
   // TODO: playing around with apollo on actual graphql apis
-  protected async getJsonData(): Promise<any> {
+  protected async getJsonData(): Promise<Weather[]> {
     let weatherData: Weather[] = []
     if ((<string>this.$attrs.url).includes('://')) {
       const response = await fetch(`${<string>this.$attrs.url}`)
@@ -159,7 +168,8 @@ export default class TestMachine extends Vue {
       weatherData = <Weather[]>data as IWeather[];
     } else weatherData = <Weather[]>require(`@/assets/${this.$attrs.url}`) as IWeather[]
     // this.weatherDataList.flatMap((elem: Weather) => {console.log(<Weather>elem as IWeather)})
-    if (weatherData) this.storeHandler = <Weather[]>weatherData
+    // if (weatherData) this.storeHandler = <Weather[]>weatherData
+    return <Weather[]>weatherData as IWeather[]
   }
 
   // write to store
@@ -195,7 +205,7 @@ export default class TestMachine extends Vue {
     // TODO: add logic of "createddate"
     // TODO: store data locally
     if (!this.storeHandler.length)
-      await this.getJsonData()
+      this.storeHandler = await this.getJsonData()
   }
 }
 </script>
