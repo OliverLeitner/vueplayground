@@ -15,28 +15,6 @@
       <!-- search input field reset button -->
       <input type="reset" name="reset" v-on:click="searchItem = ''" value="reset"/>
     </form>
-    <!--div class="table-wrapper">
-    <table class="table center-left">
-      <thead>
-        <tr>
-          <th>location</th>
-          <th>time</th>
-          <th>temp</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr 
-          v-for="data in storeHandler" 
-          :key="data.id" 
-          v-show="searchItem === '' || 
-          data.location.toLowerCase().includes(searchItem.toLowerCase())">
-          <td>{{data.location}}</td>
-          <td>{{data.time}}</td>
-          <td>{{data.temp}}</td>
-        </tr>
-      </tbody>
-    </table>
-    </div-->
   </div>
 </template>
 
@@ -50,8 +28,7 @@ export interface IWeather {
   time: string,
   temp: number,
   abbr: string,
-  id: number,
-  // hasData: boolean
+  id: number
 }
 
 // store state interface
@@ -63,8 +40,7 @@ export interface IState {
 // mother of all data class
 export class Data {
   constructor(
-    public id: number = 0,
-    // public hasData: boolean = true
+    public id: number = 0
   ) {
     return this
   }
@@ -92,71 +68,11 @@ export class Weather extends Data implements IWeather {
   }
 }
 
-// validation stuff for components...
-// TODO: find out howto use with data
-/*const WeatherComponent = defineComponent({
-  props: {
-    Weather: {
-      type: Object as PropType<Weather>,
-      default: () => ({
-        location: '',
-        time: '',
-        temp: 0,
-        abbr: '',
-        id: 0,
-        hasData: true
-      }),
-      validator: (weather: Weather) => !!undefined
-    }
-  }
-});*/
-
 @Options({
   name: 'TestMachine', // to get named components in vue browser extension
-  /*props: {
-    msg: String, // receive data from calling app
-    url: String, // json data url
-    title: String // for the page title, given from above
-  },*/
-  // we can use watch to console log or debug, but we dont need it either...
-  /*watch: {
-    searchItem: 'writeToStore', // calls a method
-  },
-  methods: { // we are local to the default class here
-    writeToStore () {
-      this.$store.state.writeSearchItem('searchItem', this.searchItem)
-    }
-  }*/
 })
 export default class TestMachine extends Vue {
-  // protected msg!: string // handling the component provided data
-  // protected url!: string  // data url
-  // protected title!: string // page title
-  // protected localWeatherDataList: Weather[] = [] // the weather data json binding
-  // protected searchItem: string = "" // bound input element
   protected store: Store<IState> = useStore() // global store def
-
-  // filter the table data based on input field
-  // we actually dont need to loop here hence were already looping in the template...
-  /*protected rowMatch() {
-    for (let idx: number = 0; idx < this.weatherDataList.length; idx++)
-      if (
-        this.weatherDataList[idx].location.toLowerCase().includes(this.searchItem.toLowerCase())
-          // this.weatherDataList[idx].time.includes(this.searchItem)
-          // this.weatherDataList[idx].temp.includes(this.searchItem)
-      ) this.weatherDataList[idx].hasData = true;
-      else this.weatherDataList[idx].hasData = false;
-  }*/
-
-  // sets weatherdata
-  /*protected set weatherDataList(data: Weather[]) {
-    this.localWeatherDataList = <Weather[]>data as IWeather[]
-  }*/
-
-  // get weatherdata
-  /*protected get weatherDataList(): Weather[] {
-      return this.localWeatherDataList as IWeather[];
-  }*/
 
   // grabs data
   // TODO: playing around with apollo on actual graphql apis
@@ -167,8 +83,6 @@ export default class TestMachine extends Vue {
       const data = await response.json()
       weatherData = <Weather[]>data as IWeather[];
     } else weatherData = <Weather[]>require(`@/assets/${this.$attrs.url}`) as IWeather[]
-    // this.weatherDataList.flatMap((elem: Weather) => {console.log(<Weather>elem as IWeather)})
-    // if (weatherData) this.storeHandler = <Weather[]>weatherData
     return <Weather[]>weatherData as IWeather[]
   }
 
@@ -176,6 +90,8 @@ export default class TestMachine extends Vue {
     this.store.commit('writeSearchItem', item)
   }
 
+  // avoid a warning in devtools that searchItem has no getter
+  // otherwise we dont need this here
   protected get searchItem(): string {
     return this.store.state.searchItem
   }
@@ -186,6 +102,7 @@ export default class TestMachine extends Vue {
   }
 
   // read from store
+  // only needed for the if check in mounted func below
   protected get storeHandler(): Weather[] {
     return this.store.state.result
   }
@@ -204,19 +121,14 @@ export default class TestMachine extends Vue {
   // TODO: add one of the already existing vue seo component
   // https://project-awesome.org/vuejs/awesome-vue
   async beforeMount() {
-    // this.msg = <string>this.$attrs.msg
     this.setMeta = <string>this.$attrs.title
   }
 
   // sets stuff at loading of component
   async mounted() {
     // TODO: add logic of "createddate"
-    // TODO: store data locally
     if (!this.storeHandler.length)
       this.storeHandler = await this.getJsonData()
-  }
-
-  async computed() {
   }
 }
 </script>
