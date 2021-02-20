@@ -15,7 +15,7 @@
       <!-- search input field reset button -->
       <input type="reset" name="reset" v-on:click="searchItem = ''" value="reset"/>
     </form>
-    <div class="table-wrapper">
+    <!--div class="table-wrapper">
     <table class="table center-left">
       <thead>
         <tr>
@@ -36,7 +36,7 @@
         </tr>
       </tbody>
     </table>
-    </div>
+    </div-->
   </div>
 </template>
 
@@ -56,6 +56,7 @@ export interface IWeather {
 
 // store state interface
 export interface IState {
+  searchItem: "",
   result: Weather[]
 }
 
@@ -119,13 +120,12 @@ export class Weather extends Data implements IWeather {
   },*/
   // we can use watch to console log or debug, but we dont need it either...
   /*watch: {
-    searchItem: 'getRows', // calls a method
+    searchItem: 'writeToStore', // calls a method
   },
   methods: { // we are local to the default class here
-    /*getRows () {
-      console.log(this.searchItem)
-      this.rowMatch() // this seems to be enough, no event needed except the default watchers
-    },
+    writeToStore () {
+      this.$store.state.writeSearchItem('searchItem', this.searchItem)
+    }
   }*/
 })
 export default class TestMachine extends Vue {
@@ -133,7 +133,7 @@ export default class TestMachine extends Vue {
   // protected url!: string  // data url
   // protected title!: string // page title
   // protected localWeatherDataList: Weather[] = [] // the weather data json binding
-  protected searchItem: string = "" // bound input element
+  // protected searchItem: string = "" // bound input element
   protected store: Store<IState> = useStore() // global store def
 
   // filter the table data based on input field
@@ -172,9 +172,17 @@ export default class TestMachine extends Vue {
     return <Weather[]>weatherData as IWeather[]
   }
 
+  protected set searchItem(item: string) {
+    this.store.commit('writeSearchItem', item)
+  }
+
+  protected get searchItem(): string {
+    return this.store.state.searchItem
+  }
+
   // write to store
   protected set storeHandler(data: Weather[]) {
-    this.store.commit('fetch', <Weather[]>data)
+    this.store.commit('writeResult', <Weather[]>data)
   }
 
   // read from store
@@ -207,17 +215,8 @@ export default class TestMachine extends Vue {
     if (!this.storeHandler.length)
       this.storeHandler = await this.getJsonData()
   }
+
+  async computed() {
+  }
 }
 </script>
-
-<style scoped lang="less">
-  .table-wrapper {
-    width: 100%;
-    margin-top: 4vh;
-  }
-  .center-left {
-    text-align: left;
-    vertical-align: middle;
-    margin: auto;
-  }
-</style>
