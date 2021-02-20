@@ -1,6 +1,6 @@
 <template>
   <div class="showresults">
-    <h1>{{ msg }}</h1>
+    <!--h1>{{ msg }}</h1-->
     <h3>show table with results</h3>
     <div class="table-wrapper">
     <table class="table center-left">
@@ -34,13 +34,13 @@ import { Weather, Data, IWeather, IState } from './TestMachine.vue'
 
 
 @Options({
-  name: 'ShowResults',
+  name: 'ShowResults'/*,
   props: {
     msg: String,
-  }
+  }*/
 })
 export default class ShowResults extends Vue {
-  msg!: string
+  // msg!: string
   protected store: Store<IState> = useStore()
 
   // write to store
@@ -63,7 +63,8 @@ export default class ShowResults extends Vue {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="less">
-h3 {
+/* no need for these, these are scoped from parent */
+/*h3 {
   margin: 40px 0 0;
 }
 ul {
@@ -76,7 +77,7 @@ li {
 }
 a {
   color: #42b983;
-}
+}*/
 .table-wrapper {
   width: 100%;
   margin-top: 4vh;
