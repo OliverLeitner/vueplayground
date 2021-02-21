@@ -2,6 +2,10 @@
 
 just some playing around with vue...
 
+![Web GL Demo](webglfish.PNG)
+
+![Filter for Text](demofilter.PNG)
+
 ## Project setup
 ```
 yarn install
