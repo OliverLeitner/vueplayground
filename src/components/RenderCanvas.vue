@@ -3,13 +3,14 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
-import * as THREE from "three";
-import Stats from "stats.js";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { Options, Vue } from "vue-class-component"
+import * as THREE from "three"
+import Stats from "stats.js"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
 // DRACO doesnt seem to work with current vuejs
-// import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
+import { Scene } from "three"
 
 /*export interface IPerspectiveCamera {
   fov: Number
@@ -31,7 +32,8 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 })
 export default class RenderCanvas extends Vue {
   gtfLoader: GLTFLoader = new GLTFLoader()
-  container: any
+  dracoLoader: DRACOLoader = new DRACOLoader()
+  container: HTMLDivElement
   scene: any
   camera: any
   renderer: any
@@ -40,13 +42,21 @@ export default class RenderCanvas extends Vue {
 
   protected loadMyData() {
     // DRACO seems to be broken with current vuejs, no compressed glb's for now
-  	/*const dracoLoader = new DRACOLoader();
-		dracoLoader.setDecoderPath( 'three/examples/js/libs/draco/gltf/' );
-		this.gtfLoader.setDRACOLoader( dracoLoader );*/
+		this.dracoLoader.setDecoderPath('../../node_modules/draco3d/')
+    this.dracoLoader.setDecoderConfig({ 
+      type: 'js',
+    })
+    this.dracoLoader.setWorkerLimit(100)
+    this.dracoLoader.preload()
+		this.gtfLoader.setDRACOLoader(this.dracoLoader)
+    this.gtfLoader.setCrossOrigin('anonymous')
     this.gtfLoader.load(
-        '/three-models/BarramundiFish.glb',
+        'three-models/BarramundiFish.glb',
         gltf => {
-            this.scene.add(gltf.scene.children[0])
+          // console.log(gltf)
+          this.scene.add(gltf.scene.children[0])
+          // Release decoder resources.
+				  this.dracoLoader.dispose();
         },
         undefined,
         undefined
@@ -58,9 +68,9 @@ export default class RenderCanvas extends Vue {
     const fov = 5 // Field of view
     const aspect = this.container.clientWidth / this.container.clientHeight
     const near = 0.1 // the near clipping plane
-    const far = 30 // the far clipping plane
+    const far = 300 // the far clipping plane
     const camera = new THREE.PerspectiveCamera(fov, aspect, near, far)
-    camera.position.set(5, 5, 4)
+    camera.position.set(5, 5, 5)
     this.camera = camera
   }
 
@@ -79,6 +89,7 @@ export default class RenderCanvas extends Vue {
   // renderer preparation
   protected prepRenderer() {
     this.renderer = new THREE.WebGLRenderer({ antialias: true })
+    this.renderer.caching = true
     this.renderer.setSize(
       this.container.clientWidth,
       this.container.clientHeight
@@ -86,13 +97,15 @@ export default class RenderCanvas extends Vue {
     this.renderer.setPixelRatio(window.devicePixelRatio)
     this.renderer.gammaFactor = 2.2
     this.renderer.outputEncoding = THREE.sRGBEncoding
+    this.renderer.shadowMap.enabled = true
     this.renderer.physicallyCorrectLights = true
     this.container.appendChild(this.renderer.domElement)
   }
 
   init() {
     // set container
-    this.container = this.$refs.sceneContainer
+    this.container = <HTMLDivElement>this.$refs.sceneContainer
+    THREE.Cache.enabled = true // caching
 
     // add stats
     this.stats = new Stats();
@@ -103,6 +116,12 @@ export default class RenderCanvas extends Vue {
 
     // create scene
     this.scene = new THREE.Scene()
+   
+    // garbage collection
+    this.scene.__lights = { length: 0, push: function(){}, indexOf: function (){ return -1 }, splice: function(){} }
+    this.scene.__objectsAdded = { length: 0, push: function(){}, indexOf: function (){ return -1 }, splice: function(){} }
+    this.scene.__objectsRemoved = { length: 0, push: function(){}, indexOf: function (){ return -1 }, splice: function(){} }
+
     this.scene.background = new THREE.Color(0x4275c7) // define the background color
 
     // add lights
@@ -131,28 +150,25 @@ export default class RenderCanvas extends Vue {
     })
   }
 
-  mounted () {
-    this.init()
+  // main
+  mounted() {
+    if (!this.container) this.init()
+  }
+
+  // garbage collection pt 2
+  beforeUnmount() {
+    this.gtfLoader = new GLTFLoader()
+    this.dracoLoader.dispose
+    this.container = undefined
+    this.scene = new Scene()
   }
 }
 </script>
 
-<style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
+<style scoped lang="less">
 #scene-container {
-  height: 100%;
+  height: 500px;
+  width: 600px;
+  margin: auto;
 }
 </style>

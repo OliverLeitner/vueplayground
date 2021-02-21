@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "draco3d": "^1.4.1",
     "register-service-worker": "^1.7.1",
     "stats.js": "^0.17.0",
     "three": "^0.125.2",
