@@ -1,5 +1,10 @@
 <template>
-  <div id="scene-container" ref="sceneContainer"></div>
+  <div>
+    <!-- for some reason, if i dont have the following line
+         i wont get the updated val into this component -->
+    <p style="display: none">{{camPosition}}</p>
+    <div id="scene-container" ref="sceneContainer"></div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -53,9 +58,21 @@ export class VectorData implements IVector {
 @Options({
   name: "RenderCanvas",
   props: {
-    camPerspective: <PerspectiveCameraData>{},
-    camPosition: <VectorData>{},
-    mainLightPosition: <VectorData>{}
+    camPerspective: <PerspectiveCameraData>{
+      fov: 5,
+      near: 0.1,
+      far: 300
+    },
+    camPosition: <VectorData>{
+      x: 5,
+      y: 5,
+      z: 5
+    },
+    mainLightPosition: <VectorData>{
+      x: 10,
+      y: 10,
+      z: 10
+    }
   },
   methods: {
     // the following has to be in here
@@ -208,6 +225,12 @@ export default class RenderCanvas extends Vue {
 
   beforeUnmount() {
     this.gcCleanup()
+  }
+
+  // on value received from parent
+  updated() {
+    this.gcCleanup()
+    this.init()
   }
 }
 </script>
