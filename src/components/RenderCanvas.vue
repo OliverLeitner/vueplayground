@@ -93,7 +93,7 @@ export default class RenderCanvas extends Vue {
   container: HTMLDivElement;
   scene: Scene; // normally id do new Scene() here, however, that breask functionality
   camera: PerspectiveCamera;
-  renderer: WebGLRenderer = new WebGLRenderer({ antialias: true });
+  renderer: WebGLRenderer = new WebGLRenderer({ antialias: true, alpha: true });
   controls: OrbitControls;
   stats: Stats = new Stats();
 
@@ -188,6 +188,14 @@ export default class RenderCanvas extends Vue {
 
     // create a fresh scene
     this.scene = new Scene();
+
+    // this aint gonna work with current three scene def
+    /*if ( this.renderer instanceof THREE.WebGLRenderer ) {
+      this.scene.__lights = { length: 0, push: function(){}, indexOf: function (){ return -1 }, splice: function(){} }
+      this.scene.__objectsAdded = { length: 0, push: function(){}, indexOf: function (){ return -1 }, splice: function(){} }
+      this.scene.__objectsRemoved = { length: 0, push: function(){}, indexOf: function (){ return -1 }, splice: function(){} }
+    }*/
+
     // define the background color, current is navy
     this.scene.background = <Color>new Color(0x4275c7);
 
@@ -212,10 +220,14 @@ export default class RenderCanvas extends Vue {
   // cleanup
   protected gcCleanup() {
     this.renderer.dispose()
+    this.renderer.renderLists.dispose()
     this.gtfLoader = new GLTFLoader();
     // this.dracoLoader.dispose;
     this.container = undefined;
-    this.scene = new Scene();
+    if (this.scene)
+      this.scene.children.forEach((child) => {
+        this.scene.remove(child)
+      })
   }
 
   // main
@@ -229,7 +241,7 @@ export default class RenderCanvas extends Vue {
 
   // on value received from parent
   updated() {
-    this.gcCleanup()
+    // this.gcCleanup()
     this.init()
   }
 }
