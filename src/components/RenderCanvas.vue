@@ -3,164 +3,211 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component"
-import * as THREE from "three"
-import Stats from "stats.js"
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
+import { Options, Vue } from "vue-class-component";
+import * as THREE from "three"; // TODO: solve caching in another way
+import Stats from "stats.js";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 // DRACO doesnt seem to work with current vuejs
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
-import { Scene } from "three"
+// import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
+import {
+  PerspectiveCamera,
+  Scene,
+  WebGLRenderer,
+  DirectionalLight,
+  HemisphereLight,
+  sRGBEncoding,
+  Color,
+} from "three";
 
-/*export interface IPerspectiveCamera {
-  fov: Number
-  aspect: Number
-  near: Number
-  far: Number
-}*/
+export interface IPerspectiveCamera {
+  fov: number
+  aspect?: number
+  near: number
+  far: number
+}
+
+export class PerspectiveCameraData implements IPerspectiveCamera {
+  constructor(
+    public fov: number = 5,
+    public aspect?: number,
+    public near: number = 0.1,
+    public far: number = 300
+  ) {}
+}
+
+export interface IVector {
+  x: number,
+  y: number,
+  z: number
+}
+
+export class VectorData implements IVector {
+  constructor(
+    public x: number = 5,
+    public y: number = 5,
+    public z: number = 5
+  ) {}
+}
 
 @Options({
   name: "RenderCanvas",
+  props: {
+    camPerspective: <PerspectiveCameraData>{},
+    camPosition: <VectorData>{},
+    mainLightPosition: <VectorData>{}
+  },
   methods: {
     // the following has to be in here
     // if i place it in the ts class, it fails badly
     render() {
-      this.renderer.render(this.scene, this.camera)
-      this.stats.update()
+      this.renderer.render(this.scene, this.camera);
+      this.stats.update();
     },
   },
 })
 export default class RenderCanvas extends Vue {
-  gtfLoader: GLTFLoader = new GLTFLoader()
-  dracoLoader: DRACOLoader = new DRACOLoader()
-  container: HTMLDivElement
-  scene: any
-  camera: any
-  renderer: any
-  controls: any
-  stats: any
+  camPerspective: PerspectiveCameraData = new PerspectiveCameraData()
+  camPosition: VectorData = new VectorData()
+  mainLightPosition: VectorData = new VectorData(10, 10, 10)
+  gtfLoader: GLTFLoader = new GLTFLoader();
+  // TODO: fix draco with vuejs 3
+  // dracoLoader: DRACOLoader = new DRACOLoader();
+  container: HTMLDivElement;
+  scene: Scene; // normally id do new Scene() here, however, that breask functionality
+  camera: PerspectiveCamera;
+  renderer: WebGLRenderer = new WebGLRenderer({ antialias: true });
+  controls: OrbitControls;
+  stats: Stats = new Stats();
 
   protected loadMyData() {
     // DRACO seems to be broken with current vuejs, no compressed glb's for now
-		this.dracoLoader.setDecoderPath('../../node_modules/draco3d/')
+    /*this.dracoLoader.setDecoderPath(
+      "/node_modules/three/examples/js/libs/draco/gltf/"
+    );
     this.dracoLoader.setDecoderConfig({ 
       type: 'js',
     })
-    this.dracoLoader.setWorkerLimit(100)
-    this.dracoLoader.preload()
-		this.gtfLoader.setDRACOLoader(this.dracoLoader)
-    this.gtfLoader.setCrossOrigin('anonymous')
+    this.dracoLoader.setWorkerLimit(100);
+    this.dracoLoader.preload();
+    this.gtfLoader.setDRACOLoader(<DRACOLoader>this.dracoLoader);*/
+    this.gtfLoader.setCrossOrigin("anonymous");
     this.gtfLoader.load(
-        'three-models/BarramundiFish.glb',
-        gltf => {
-          // console.log(gltf)
-          this.scene.add(gltf.scene.children[0])
-          // Release decoder resources.
-				  this.dracoLoader.dispose();
-        },
-        undefined,
-        undefined
-    )
+      "three-models/BarramundiFish.glb",
+      (gltf) => {
+        // console.log(gltf);
+        this.scene.add(gltf.scene/*.children[0]*/);
+        // Release decoder resources.
+        // this.dracoLoader.dispose();
+      },
+      undefined,
+      (error) => {
+        console.error(error);
+      }
+    );
   }
 
   // adding the camera
   protected addCamera() {
-    const fov = 5 // Field of view
-    const aspect = this.container.clientWidth / this.container.clientHeight
-    const near = 0.1 // the near clipping plane
-    const far = 300 // the far clipping plane
-    const camera = new THREE.PerspectiveCamera(fov, aspect, near, far)
-    camera.position.set(5, 5, 5)
-    this.camera = camera
+    this.camera = new PerspectiveCamera(
+      this.camPerspective.fov, // field of view
+      this.container.clientWidth / this.container.clientHeight, // aspect ratio 
+      this.camPerspective.near,  // near clipping plane
+      this.camPerspective.far // far clipping plane
+    );
+    this.camera.position.set(
+      this.camPosition.x,
+      this.camPosition.y,
+      this.camPosition.z
+    );
   }
 
   // add lights
   protected addLights() {
-    const ambientLight = new THREE.HemisphereLight(
+    const ambientLight = new HemisphereLight(
       0xffffff, // bright sky color
       0x222222, // dim ground color
       1 // intensity
-    )
-    const mainLight = new THREE.DirectionalLight(0xffffff, 4.0)
-    mainLight.position.set(10, 10, 10)
-    this.scene.add(ambientLight, mainLight)
+    );
+    const mainLight = new DirectionalLight(0xffffff, 4.0);
+    mainLight.position.set(
+      this.mainLightPosition.x, 
+      this.mainLightPosition.y, 
+      this.mainLightPosition.z
+    );
+    this.scene.add(ambientLight, mainLight);
   }
 
   // renderer preparation
   protected prepRenderer() {
-    this.renderer = new THREE.WebGLRenderer({ antialias: true })
-    this.renderer.caching = true
+    this.renderer.dispose()
     this.renderer.setSize(
       this.container.clientWidth,
       this.container.clientHeight
-    )
-    this.renderer.setPixelRatio(window.devicePixelRatio)
-    this.renderer.gammaFactor = 2.2
-    this.renderer.outputEncoding = THREE.sRGBEncoding
-    this.renderer.shadowMap.enabled = true
-    this.renderer.physicallyCorrectLights = true
-    this.container.appendChild(this.renderer.domElement)
+    );
+    this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.gammaFactor = 2.2;
+    this.renderer.outputEncoding = sRGBEncoding;
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.physicallyCorrectLights = true;
+    this.container.appendChild(this.renderer.domElement);
   }
 
   init() {
-    // set container
-    this.container = <HTMLDivElement>this.$refs.sceneContainer
-    THREE.Cache.enabled = true // caching
+    // cleanup existing container data
+    this.gcCleanup()
 
-    // add stats
-    this.stats = new Stats();
-    this.container.appendChild(this.stats.dom)
+    // set container
+    this.container = <HTMLDivElement>this.$refs.sceneContainer;
+
+    // enable caching
+    THREE.Cache.enabled = true;
+
+    // append frame stats top-left
+    this.container.appendChild(this.stats.dom);
 
     // add camera
-    this.addCamera()
+    this.addCamera();
 
-    // create scene
-    this.scene = new THREE.Scene()
-   
-    // garbage collection
-    this.scene.__lights = { length: 0, push: function(){}, indexOf: function (){ return -1 }, splice: function(){} }
-    this.scene.__objectsAdded = { length: 0, push: function(){}, indexOf: function (){ return -1 }, splice: function(){} }
-    this.scene.__objectsRemoved = { length: 0, push: function(){}, indexOf: function (){ return -1 }, splice: function(){} }
-
-    this.scene.background = new THREE.Color(0x4275c7) // define the background color
+    // create a fresh scene
+    this.scene = new Scene();
+    // define the background color, current is navy
+    this.scene.background = <Color>new Color(0x4275c7);
 
     // add lights
-    this.addLights()
+    this.addLights();
 
     // add controls
-    this.controls = new OrbitControls(this.camera, this.container)
+    this.controls = new OrbitControls(this.camera, this.container);
 
     // create renderer
-    this.prepRenderer()
-
-    // set aspect ratio to match the new browser window aspect ratio
-    this.camera.aspect =
-      this.container.clientWidth / this.container.clientHeight
-    this.camera.updateProjectionMatrix()
-    this.renderer.setSize(
-      this.container.clientWidth,
-      this.container.clientHeight
-    )
+    this.prepRenderer();
 
     // prepping the loader
-    this.loadMyData()
+    this.loadMyData();
 
+    // and showing things in output
     this.renderer.setAnimationLoop(() => {
-      this.render()
-    })
+      this.render();
+    });
+  }
+
+  // cleanup
+  protected gcCleanup() {
+    this.renderer.dispose()
+    this.gtfLoader = new GLTFLoader();
+    // this.dracoLoader.dispose;
+    this.container = undefined;
+    this.scene = new Scene();
   }
 
   // main
   mounted() {
-    if (!this.container) this.init()
+    if (!this.container) this.init();
   }
 
-  // garbage collection pt 2
   beforeUnmount() {
-    this.gtfLoader = new GLTFLoader()
-    this.dracoLoader.dispose
-    this.container = undefined
-    this.scene = new Scene()
+    this.gcCleanup()
   }
 }
 </script>
