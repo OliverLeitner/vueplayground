@@ -8,7 +8,7 @@
   z: <input type="number" v-model.number="camPosition.z" />
   <br />
   <br />
-  <RenderCanvas :camPosition="camPosition" />
+  <RenderCanvas :config="{camPosition: camPosition}" />
 </template>
 
 <script lang="ts">
@@ -23,10 +23,7 @@ import RenderCanvas from "@/components/RenderCanvas.vue"; // @ is an alias to /s
   data() {
     // initial values
     return {
-      camPosition: { x: 5, y: 5, z: 5 },
-      camX: 5,
-      camY: 5,
-      camZ: 5
+      camPosition: { x: 5, y: 5, z: 5 }
     }
   }
 })

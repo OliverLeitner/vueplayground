@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id="scene-container" ref="sceneContainer" v-bind="camPosition"></div>
+    <div id="scene-container" ref="sceneContainer" v-bind="config"></div>
   </div>
 </template>
 
@@ -21,6 +21,20 @@ import {
   sRGBEncoding,
   Color,
 } from "three";
+
+export interface IConfig {
+  camPerspective: IPerspectiveCamera
+  camPosition: IVector,
+  mainLightPosition: IVector
+}
+
+export class ConfigData implements IConfig {
+  constructor(
+    public camPerspective: PerspectiveCameraData = new PerspectiveCameraData(5, 0.1, 300),
+    public camPosition: VectorData = new VectorData(),
+    public mainLightPosition: VectorData = new VectorData(10, 10, 10)
+  ) {}
+}
 
 export interface IPerspectiveCamera {
   fov: number
@@ -55,20 +69,22 @@ export class VectorData implements IVector {
 @Options({
   name: "RenderCanvas",
   props: {
-    camPerspective: <PerspectiveCameraData>{
-      fov: 5,
-      near: 0.1,
-      far: 300
-    },
-    camPosition: <VectorData>{
-      x: 5,
-      y: 5,
-      z: 5
-    },
-    mainLightPosition: <VectorData>{
-      x: 10,
-      y: 10,
-      z: 10
+    config: <ConfigData>{
+      camPerspective: <PerspectiveCameraData>{
+        fov: 5,
+        near: 0.1,
+        far: 300
+      },
+      camPosition: <VectorData>{
+        x: 5,
+        y: 5,
+        z: 5
+      },
+      mainLightPosition: <VectorData>{
+        x: 10,
+        y: 10,
+        z: 10
+      }
     }
   },
   methods: {
@@ -84,6 +100,11 @@ export default class RenderCanvas extends Vue {
   camPerspective: PerspectiveCameraData = new PerspectiveCameraData()
   camPosition: VectorData = new VectorData()
   mainLightPosition: VectorData = new VectorData(10, 10, 10)
+  config: ConfigData = new ConfigData(
+    this.camPerspective,
+    this.camPosition,
+    this.mainLightPosition
+  )
   gtfLoader: GLTFLoader = new GLTFLoader();
   // TODO: fix draco with vuejs 3
   // dracoLoader: DRACOLoader = new DRACOLoader();
@@ -124,15 +145,16 @@ export default class RenderCanvas extends Vue {
   // adding the camera
   protected addCamera() {
     this.camera = new PerspectiveCamera(
+      // TODO: camPerspective inputs to value out
       this.camPerspective.fov, // field of view
       this.container.clientWidth / this.container.clientHeight, // aspect ratio 
       this.camPerspective.near,  // near clipping plane
       this.camPerspective.far // far clipping plane
     );
     this.camera.position.set(
-      this.camPosition.x,
-      this.camPosition.y,
-      this.camPosition.z
+      this.config.camPosition.x,
+      this.config.camPosition.y,
+      this.config.camPosition.z
     );
   }
 
@@ -145,6 +167,7 @@ export default class RenderCanvas extends Vue {
     );
     const mainLight = new DirectionalLight(0xffffff, 4.0);
     mainLight.position.set(
+      // TODO: mainlightpositions to config out
       this.mainLightPosition.x, 
       this.mainLightPosition.y, 
       this.mainLightPosition.z
