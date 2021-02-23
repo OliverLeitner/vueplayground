@@ -5,5 +5,9 @@ module.exports = {
 
   pwa: {
     name: 'oliver demo'
+  },
+
+  devServer: {
+    disableHostCheck: true
   }
 }

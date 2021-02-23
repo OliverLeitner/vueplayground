@@ -6,7 +6,6 @@
   x: <input type="number" v-model.number="camX" />&nbsp;
   y: <input type="number" v-model.number="camY" />&nbsp;
   z: <input type="number" v-model.number="camZ" />
-  <button @click="submitData(camX, camY, camZ)">submit</button>
   <br />
   <br />
   <RenderCanvas :camPosition="camPosition" />
@@ -21,7 +20,19 @@ import RenderCanvas from "@/components/RenderCanvas.vue"; // @ is an alias to /s
   components: {
     RenderCanvas,
   },
+  watch: {
+    camX: function (camX) {
+      this.submitData(camX, this.camY, this.camZ)
+    },
+    camY: function (camY) {
+      this.submitData(this.camX, camY, this.camZ)
+    },
+    camZ: function (camZ) {
+      this.submitData(this.camX, this.camY, camZ)
+    }
+  },
   data() {
+    // initial values
     return {
       camPosition: { x: 5, y: 5, z: 5 },
       camX: 5,
@@ -30,12 +41,14 @@ import RenderCanvas from "@/components/RenderCanvas.vue"; // @ is an alias to /s
     }
   },
   methods: {
-    submitData(x = 5, y = 5, z = 5) {
-      this.camPosition.x = x
-      this.camPosition.y = y
-      this.camPosition.z = z
+    submitData(x: number, y: number, z: number) {
+      if (x && y && z) {
+        this.camPosition.x = x
+        this.camPosition.y = y
+        this.camPosition.z = z
+      }
     }
-  }
+  },
 })
 export default class AboutView extends Vue {}
 </script>

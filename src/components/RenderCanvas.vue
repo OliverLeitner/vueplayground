@@ -1,9 +1,6 @@
 <template>
   <div>
-    <!-- for some reason, if i dont have the following line
-         i wont get the updated val into this component -->
-    <p style="display: none">{{camPosition}}</p>
-    <div id="scene-container" ref="sceneContainer"></div>
+    <div id="scene-container" ref="sceneContainer" v-bind="camPosition"></div>
   </div>
 </template>
 
