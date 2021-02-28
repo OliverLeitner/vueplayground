@@ -4,6 +4,7 @@
     <router-link to="/canvas">Canvas</router-link> |
     <router-link to="/drawing">Drawing</router-link> |
     <router-link to="/anime">Anime</router-link> |
+    <router-link to="/elisa">Eliza</router-link> |
     <router-link to="/test">Testing</router-link>
   </div>
   <router-view/>
