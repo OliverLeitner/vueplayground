@@ -27,5 +27,5 @@ import RenderCanvas from "@/components/RenderCanvas.vue"; // @ is an alias to /s
     }
   }
 })
-export default class AboutView extends Vue {}
+export default class CanvasView extends Vue {}
 </script>

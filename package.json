@@ -7,7 +7,9 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "@freezegold/anime.js": "^2.0.3",
     "@types/three": "^0.125.3",
+    "akaneko": "^5.0.1",
     "core-js": "^3.6.5",
     "draco3d": "^1.4.1",
     "register-service-worker": "^1.7.1",

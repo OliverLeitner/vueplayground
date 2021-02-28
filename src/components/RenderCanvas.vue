@@ -22,49 +22,10 @@ import {
   Color,
 } from "three";
 
-export interface IConfig {
-  camPerspective: IPerspectiveCamera
-  camPosition: IVector,
-  mainLightPosition: IVector
-}
-
-export class ConfigData implements IConfig {
-  constructor(
-    public camPerspective: PerspectiveCameraData = new PerspectiveCameraData(5, 0.1, 300),
-    public camPosition: VectorData = new VectorData(),
-    public mainLightPosition: VectorData = new VectorData(10, 10, 10)
-  ) {}
-}
-
-export interface IPerspectiveCamera {
-  fov: number
-  aspect?: number
-  near: number
-  far: number
-}
-
-export class PerspectiveCameraData implements IPerspectiveCamera {
-  constructor(
-    public fov: number = 5,
-    public aspect?: number,
-    public near: number = 0.1,
-    public far: number = 300
-  ) {}
-}
-
-export interface IVector {
-  x: number,
-  y: number,
-  z: number
-}
-
-export class VectorData implements IVector {
-  constructor(
-    public x: number = 5,
-    public y: number = 5,
-    public z: number = 5
-  ) {}
-}
+// import models
+import { VectorData } from "@/shared/models/vectordata.model"
+import { PerspectiveCameraData } from "@/shared/models/perspectivecameradata.model"
+import { ConfigData } from "@/shared/models/configdata.model"
 
 @Options({
   name: "RenderCanvas",
