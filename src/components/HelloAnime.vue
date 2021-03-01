@@ -25,6 +25,13 @@ export default class HelloAnimeComponent extends Vue {
             .then(json => { return json.url });
     }
 
+    // cors origin bug
+    protected async getAn(params) {
+        return fetch(`http://vue.localnet:3010/api/v2/img/${params}`)
+            .then(res => res.json())
+            .then(json => { return json.url })
+    }
+
     /**
      * sfw:
      * 
