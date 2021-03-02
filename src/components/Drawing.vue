@@ -30,7 +30,7 @@ export default class DrawingComponent extends Vue {
     // paintbrush thingy
     // this.drawCoordinates(event.clientX - rect.left, event.clientY - rect.top);
     // mouse jump on rects thingy
-    this.drawRects(<HTMLCanvasElement>this.$refs.moveContainer)
+    this.drawRects(<HTMLCanvasElement>this.$refs.moveContainer);
   }
 
   // draw to canvas
@@ -94,7 +94,7 @@ export default class DrawingComponent extends Vue {
 
   mounted() {
     // initial set
-    this.drawRects(<HTMLCanvasElement>this.$refs.moveContainer)
+    this.drawRects(<HTMLCanvasElement>this.$refs.moveContainer);
   }
 }
 </script>

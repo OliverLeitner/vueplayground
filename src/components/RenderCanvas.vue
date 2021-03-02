@@ -23,9 +23,9 @@ import {
 } from "three";
 
 // import models
-import { VectorData } from "@/shared/models/vectordata.model"
-import { PerspectiveCameraData } from "@/shared/models/perspectivecameradata.model"
-import { ConfigData } from "@/shared/models/configdata.model"
+import { VectorData } from "@/shared/models/vectordata.model";
+import { PerspectiveCameraData } from "@/shared/models/perspectivecameradata.model";
+import { ConfigData } from "@/shared/models/configdata.model";
 
 @Options({
   name: "RenderCanvas",
@@ -34,19 +34,19 @@ import { ConfigData } from "@/shared/models/configdata.model"
       camPerspective: <PerspectiveCameraData>{
         fov: 5,
         near: 0.1,
-        far: 300
+        far: 300,
       },
       camPosition: <VectorData>{
         x: 5,
         y: 5,
-        z: 5
+        z: 5,
       },
       mainLightPosition: <VectorData>{
         x: 10,
         y: 10,
-        z: 10
-      }
-    }
+        z: 10,
+      },
+    },
   },
   methods: {
     // the following has to be in here
@@ -58,14 +58,14 @@ import { ConfigData } from "@/shared/models/configdata.model"
   },
 })
 export default class RenderCanvas extends Vue {
-  camPerspective: PerspectiveCameraData = new PerspectiveCameraData()
-  camPosition: VectorData = new VectorData()
-  mainLightPosition: VectorData = new VectorData(10, 10, 10)
+  camPerspective: PerspectiveCameraData = new PerspectiveCameraData();
+  camPosition: VectorData = new VectorData();
+  mainLightPosition: VectorData = new VectorData(10, 10, 10);
   config: ConfigData = new ConfigData(
     this.camPerspective,
     this.camPosition,
     this.mainLightPosition
-  )
+  );
   gtfLoader: GLTFLoader = new GLTFLoader();
   // TODO: fix draco with vuejs 3
   // dracoLoader: DRACOLoader = new DRACOLoader();
@@ -92,7 +92,7 @@ export default class RenderCanvas extends Vue {
       "three-models/BarramundiFish.glb",
       (gltf) => {
         // console.log(gltf);
-        this.scene.add(gltf.scene/*.children[0]*/);
+        this.scene.add(gltf.scene /*.children[0]*/);
         // Release decoder resources.
         // this.dracoLoader.dispose();
       },
@@ -108,8 +108,8 @@ export default class RenderCanvas extends Vue {
     this.camera = new PerspectiveCamera(
       // TODO: camPerspective inputs to value out
       this.camPerspective.fov, // field of view
-      this.container.clientWidth / this.container.clientHeight, // aspect ratio 
-      this.camPerspective.near,  // near clipping plane
+      this.container.clientWidth / this.container.clientHeight, // aspect ratio
+      this.camPerspective.near, // near clipping plane
       this.camPerspective.far // far clipping plane
     );
     this.camera.position.set(
@@ -129,8 +129,8 @@ export default class RenderCanvas extends Vue {
     const mainLight = new DirectionalLight(0xffffff, 4.0);
     mainLight.position.set(
       // TODO: mainlightpositions to config out
-      this.mainLightPosition.x, 
-      this.mainLightPosition.y, 
+      this.mainLightPosition.x,
+      this.mainLightPosition.y,
       this.mainLightPosition.z
     );
     this.scene.add(ambientLight, mainLight);
@@ -138,7 +138,7 @@ export default class RenderCanvas extends Vue {
 
   // renderer preparation
   protected prepRenderer() {
-    this.renderer.dispose()
+    this.renderer.dispose();
     this.renderer.setSize(
       this.container.clientWidth,
       this.container.clientHeight
@@ -153,7 +153,7 @@ export default class RenderCanvas extends Vue {
 
   init() {
     // cleanup existing container data
-    this.gcCleanup()
+    this.gcCleanup();
 
     // set container
     this.container = <HTMLDivElement>this.$refs.sceneContainer;
@@ -200,15 +200,15 @@ export default class RenderCanvas extends Vue {
 
   // cleanup
   protected gcCleanup() {
-    this.renderer.dispose()
-    this.renderer.renderLists.dispose()
+    this.renderer.dispose();
+    this.renderer.renderLists.dispose();
     this.gtfLoader = new GLTFLoader();
     // this.dracoLoader.dispose;
     this.container = undefined;
     if (this.scene)
       this.scene.children.forEach((child) => {
-        this.scene.remove(child)
-      })
+        this.scene.remove(child);
+      });
   }
 
   // main
@@ -217,13 +217,13 @@ export default class RenderCanvas extends Vue {
   }
 
   beforeUnmount() {
-    this.gcCleanup()
+    this.gcCleanup();
   }
 
   // on value received from parent
   updated() {
     // this.gcCleanup()
-    this.init()
+    this.init();
   }
 }
 </script>

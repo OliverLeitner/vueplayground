@@ -1,14 +1,12 @@
 <template>
-    <div class="datagridcomponent">
-        grid goes here...
-    </div>
+  <div class="datagridcomponent">grid goes here...</div>
 </template>
 
 <script lang="ts">
-import { Vue, Options } from 'vue-class-component';
+import { Vue, Options } from "vue-class-component";
 
 @Options({
-    name: "DataGridComponent"
+  name: "DataGridComponent",
 })
 export default class DataGridComponent extends Vue {}
 </script>
