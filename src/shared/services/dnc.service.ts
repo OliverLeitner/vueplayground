@@ -1,27 +1,19 @@
+import {Customer} from "@/shared/models/customer.model"
+
 export class DNCWebApiService {
-    _param: string = "";
 
     constructor(
         public host: string = "",
         public port: number = 0,
         public parameter: string = ""
     ) {
-        this.param = parameter;
     }
 
-    public set param(val: string) {
-        this._param = val;
-    }
-
-    public get param(): string {
-        return this._param;
-    }
-
-    public DncData() {
-        return fetch(`${this.host}:${this.port}/api/GetAllItems?type=${this.param}`)
+    public async DncData(): Promise<Customer[]> {
+        return await fetch(`${this.host}:${this.port}/api/GetAllItems?type=${this.parameter}`)
             .then((res) => res.json())
             .then((json) => {
-                return json;
+                return <Customer[]>json;
             });
     }
 }

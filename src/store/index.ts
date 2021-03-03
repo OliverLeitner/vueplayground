@@ -4,7 +4,6 @@ export default createStore({
   state: {
     searchItem: "",
     result: {},
-    data: []
   },
   mutations: {
     writeResult(state, payload) {
@@ -13,9 +12,6 @@ export default createStore({
     writeSearchItem(state, payload) {
       state.searchItem = payload
     },
-    writeWebApiData(state, payload) {
-      state.data = payload
-    }
   },
   actions: {
   },
