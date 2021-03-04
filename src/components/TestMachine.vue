@@ -2,7 +2,6 @@
   <div class="test">
     <!-- if we dont operate on that passed in var, we dont need to have it in props -->
     <h1>{{ $attrs.msg }}</h1>
-    <p>search in table</p>
     <form name="search">
       <!-- search text input field -->
       <input
@@ -37,7 +36,7 @@ export interface IWeather {
 
 // store state interface
 export interface IState {
-  searchItem: "";
+  searchItem: string;
   result: Weather[];
 }
 
@@ -74,65 +73,74 @@ export class Weather extends Data implements IWeather {
   name: "TestMachine", // to get named components in vue browser extension
 })
 export default class TestMachine extends Vue {
-  protected store: Store<IState> = useStore(); // global store def
+  public store: Store<IState> = useStore(); // global store def
 
   // grabs data
   // TODO: playing around with apollo on actual graphql apis
-  protected async getJsonData(): Promise<Weather[]> {
-    let weatherData: Weather[] = [];
-    if ((<string>this.$attrs.url).includes("://")) {
-      const response = await fetch(`${<string>this.$attrs.url}`);
-      const data = await response.json();
-      weatherData = (<Weather[]>data) as IWeather[];
-    } else
-      weatherData = (<Weather[]>(
-        require(`@/assets/${this.$attrs.url}`)
-      )) as IWeather[];
-    return (<Weather[]>weatherData) as IWeather[];
+  public async getJsonData(): Promise<IWeather[]> {
+    let weatherData: Promise<Weather[]> = null; // TODO: strong type this later...
+    if (this.$attrs && this.$attrs.url) {
+      if (this.$attrs.url.toString().includes("://")) {
+        await fetch(`${this.$attrs.url.toString()}`).then((response) => {
+          if (response.ok) weatherData = response.json();
+        })
+        // TODO: find out why require wont work with jest
+      } else weatherData = require(`@/assets/weather.json`) as Promise<IWeather[]>;
+      return weatherData as Promise<Weather[]>;
+    }
   }
 
-  protected set searchItem(item: string) {
-    this.store.commit("writeSearchItem", item);
+  public set searchItem(item: string) {
+    if (this.store) this.store.commit("writeSearchItem", item);
   }
 
   // avoid a warning in devtools that searchItem has no getter
   // otherwise we dont need this here
-  protected get searchItem(): string {
-    return this.store.state.searchItem;
+  public get searchItem(): string {
+    if (this.store && this.store.state)
+      return this.store.state.searchItem;
+    else return "search me!"  
   }
 
   // write to store
-  protected set storeHandler(data: Weather[]) {
-    this.store.commit("writeResult", <Weather[]>data);
+  public set storeHandler(data: Weather[]) {
+    if (this.store)
+      this.store.commit("writeResult", data as Weather[]);
   }
 
   // read from store
   // only needed for the if check in mounted func below
-  protected get storeHandler(): Weather[] {
-    return this.store.state.result;
+  public get storeHandler(): Weather[] {
+    if (this.store && this.store.state)
+      return this.store.state.result;
   }
 
   // dont really need it, but to avoid devtools error
   protected get setMeta(): string {
-    return document.title;
+    if (document) return document.title;
   }
 
   // metadata stuff sceleton
   protected set setMeta(title: string) {
-    document.title = <string>this.$attrs.title;
+    if (this.$attrs && this.$attrs.title)
+      document.title = this.$attrs.title.toString();
   }
 
   // adding metadata when needed
   // TODO: add one of the already existing vue seo component
   // https://project-awesome.org/vuejs/awesome-vue
   async beforeMount() {
-    this.setMeta = <string>this.$attrs.title;
+    if (this.$attrs && this.$attrs.title)
+      this.setMeta = this.$attrs.title.toString();
   }
 
   // sets stuff at loading of component
   async mounted() {
     // TODO: add logic of "createddate"
-    if (!this.storeHandler.length) this.storeHandler = await this.getJsonData();
+    if (this.storeHandler && !this.storeHandler.length)
+      await this.getJsonData().then((resp) => {
+        this.storeHandler = resp;
+      });
   }
 }
 </script>
