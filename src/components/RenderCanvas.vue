@@ -89,7 +89,7 @@ export default class RenderCanvas extends Vue {
     this.gtfLoader.setDRACOLoader(<DRACOLoader>this.dracoLoader);*/
     this.gtfLoader.setCrossOrigin("anonymous");
     this.gtfLoader.load(
-      "three-models/BarramundiFish.glb",
+      "http://vue.localnet:8080/three-models/BarramundiFish.glb", // wants url... now...
       (gltf) => {
         // console.log(gltf);
         this.scene.add(gltf.scene /*.children[0]*/);
