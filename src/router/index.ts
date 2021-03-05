@@ -10,6 +10,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/canvas',
     name: 'Canvas',
+    // lets keep that one for docu...
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
@@ -18,34 +19,27 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/drawing',
     name: 'Drawing',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "drawing" */ '@/views/Drawing.vue')
   },
   {
     path: '/anime',
     name: 'Anime',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "anime" */ '@/views/Anime.vue')
   },
   {
     path: '/elisa',
     name: 'Elisa',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "elisa" */ '@/views/Elisa.vue')
   },
   {
     path: '/grid',
     name: 'Grid',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "grid" */ '@/views/Grid.vue')
+  },
+  {
+    path: '/interact',
+    name: 'Interact',
+    component: () => import(/* webpackChunkName: "interact" */ '@/views/Interact.vue')
   },
   {
     path: '/test',
